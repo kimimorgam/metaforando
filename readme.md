@@ -2,7 +2,7 @@
 
 | Colab | Info
 | --- | --- |
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]([https://colab.research.google.com/github/camenduru/seamless-m4t-colab/blob/main/seamless_m4t_colab.ipynb](https://colab.research.google.com/drive/17unfulyOvCDzIdtmPCz-2h65jYbH1kDQ#scrollTo=GffPZLFx-YYj)) | Use via colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/17unfulyOvCDzIdtmPCz-2h65jYbH1kDQ#scrollTo=GffPZLFx-YYj](https://colab.research.google.com/drive/17unfulyOvCDzIdtmPCz-2h65jYbH1kDQ#scrollTo=GffPZLFx-YYj)) | Use via colab
 
 Face Emotion Analyzer
 Este projeto usa a biblioteca DeepFace para analisar as emoções de uma pessoa em um vídeo.

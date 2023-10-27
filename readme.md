@@ -2,7 +2,7 @@
 
 | Colab | Info
 | --- | --- |
-[Open In Colab] [https://colab.research.google.com/drive/17unfulyOvCDzIdtmPCz-2h65jYbH1kDQ#scrollTo=GffPZLFx-YYj] | Use via colab
+[Open In Colab] (https://colab.research.google.com/drive/17unfulyOvCDzIdtmPCz-2h65jYbH1kDQ#scrollTo=GffPZLFx-YYj) | Use via colab
 
 Face Emotion Analyzer
 Este projeto usa a biblioteca DeepFace para analisar as emoções de uma pessoa em um vídeo.

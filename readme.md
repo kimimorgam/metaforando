@@ -4,28 +4,6 @@
 | --- | --- |
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]([https://colab.research.google.com/github/camenduru/seamless-m4t-colab/blob/main/seamless_m4t_colab.ipynb](https://colab.research.google.com/drive/17unfulyOvCDzIdtmPCz-2h65jYbH1kDQ#scrollTo=GffPZLFx-YYj)) | Use via colab
 
-## Main Repo
-https://github.com/facebookresearch/seamless_communication <br />
-https://huggingface.co/spaces/facebook/seamless_m4t/tree/main <br />
-
-## Page
-https://ai.meta.com/resources/models-and-libraries/seamless-communication/
-
-## Paper
-https://arxiv.org/abs/2308.11596 <br />
-https://dl.fbaipublicfiles.com/seamless/seamless_m4t_paper.pdf <br />
-
-# Model
-https://huggingface.co/facebook/seamless-m4t-large <br />
-https://huggingface.co/facebook/seamless-m4t-medium <br />
-
-# License
-https://creativecommons.org/licenses/by-nc/4.0/deed.en_GB
-
-## Output
-https://github.com/camenduru/seamless-m4t-colab/assets/54370274/164d86ec-79e3-415f-a9a0-6c9c25042de9
-
-
 Face Emotion Analyzer
 Este projeto usa a biblioteca DeepFace para analisar as emoções de uma pessoa em um vídeo.
 

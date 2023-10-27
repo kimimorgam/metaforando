@@ -16,9 +16,9 @@ Após a análise, uma nova janela será aberta mostrando as porcentagens das emo
 
 Dependências:
 
-OpenCV
+OpenCV ( pip install opencv-python )
 tkinter
-DeepFace
+DeepFace ( pip install deepface )
 os
 shutil
 collections
@@ -44,9 +44,9 @@ The program will analyze the video and display the analysis information on the v
 After the analysis, a new window will open showing the percentages of the most felt emotions by the person in the video.
 
 Dependencies:
-OpenCV
+OpenCV ( pip install opencv-python )
 tkinter
-DeepFace
+DeepFace ( pip install deepface )
 os
 shutil
 collections

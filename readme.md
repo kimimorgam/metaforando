@@ -38,8 +38,3 @@ shutil
 collections
 
 Este projeto foi desenvolvido em Python.
-
-shutil
-collections
-
-This project is developed in Python.

@@ -1,174 +1,152 @@
-import cv2
+
 import os
-import tkinter as tk
-from tkinter import filedialog, ttk
-from deepface import DeepFace
 import shutil
-from collections import Counter
-import threading
-import time
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
+import cv2
+import numpy as np
+import requests
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.image import img_to_array
 
-# Função para desenhar texto com fundo
-def draw_text_with_background_opencv(img, text, face_num, fontScale=1, thickness=2, color=(255, 255, 255), bg=(0, 0, 0)):
-    padding = 10
-    (text_width, text_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, fontScale, thickness)
+# Função para baixar o modelo pré-treinado
+def download_model():
+    url = "https://github.com/priya-dwivedi/face_and_emotion_detection/raw/master/emotion_detector_models/model_v6_23.hdf5"
+    model_path = "model_v6_23.hdf5"
+    r = requests.get(url, allow_redirects=True)
+    with open(model_path, "wb") as f:
+        f.write(r.content)
+    print("Modelo baixado.")
 
-    # Limita o tamanho do texto ao tamanho da imagem
-    max_width = img.shape[1] - 2 * padding
-    if text_width > max_width:
-        fontScale = fontScale * max_width / text_width
-        (text_width, text_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, fontScale, thickness)
+# Função para carregar o modelo
+def load_pretrained_model():
+    model = load_model("model_v6_23.hdf5")
+    print("Modelo carregado.")
+    return model
 
-    y = img.shape[0] - padding - face_num * (text_height + baseline + padding)
-    x = padding
+# Função para verificar disponibilidade da GPU
+def check_gpu():
+    gpu_available = tf.config.list_physical_devices('GPU')
+    if not gpu_available:
+        print("GPU não está disponível. O processo será executado na CPU.")
+    else:
+        print("GPU está disponível. O processo será executado na GPU.")
 
-    cv2.rectangle(img, (x, y - text_height - baseline), (x + text_width, y), bg, thickness=cv2.FILLED)
+# Função para abrir o vídeo para análise
+def open_video():
+    global cap
+    file_path = filedialog.askopenfilename()
+    cap = cv2.VideoCapture(file_path)
+    print(f"Vídeo {file_path} aberto.")
+    return cap
 
-    cv2.putText(img, text, (x, y - baseline), cv2.FONT_HERSHEY_SIMPLEX, fontScale, color, thickness)
+# Função para obter taxa de quadros do vídeo
+def get_video_fps():
+    global video_fps
+    video_fps = int(cap.get(cv2.CAP_PROP_FPS))
+    fps_label.config(text=f"Taxa de quadros do vídeo: {video_fps}")
+    return video_fps
 
-    return img
+# Função para coletar entrada do usuário para taxa de quadros
+def get_user_fps():
+    user_fps = fps_entry.get()
+    return user_fps
 
-# Função para extrair quadros do vídeo
-def extract_frames(video_path):
-    cap = cv2.VideoCapture(video_path)
-
-    if not os.path.exists('frames'):
-        os.makedirs('frames')
-
+# Função para o loop de análise de quadro
+def analyze_frame(cap, model, analyze_fps, video_fps):
     frame_count = 0
-
+    total_emotions = {}
+    os.makedirs("frames", exist_ok=True)
+    
     while cap.isOpened():
         ret, frame = cap.read()
-
-        if ret:
-            # Salve o quadro como uma imagem
-            cv2.imwrite(f'frames/frame{frame_count}.jpg', frame)
-            frame_count += 1
-        else:
+        if not ret:
             break
 
-    cap.release()
-    cv2.destroyAllWindows()
+        if frame_count % (video_fps // int(analyze_fps)) == 0:
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+            faces = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
 
-    return frame_count
+            for (x, y, w, h) in faces:
+                roi_gray = gray_frame[y:y+h, x:x+w]
+                roi_gray = cv2.resize(roi_gray, (48, 48))
+                roi = roi_gray.astype('float')/255.0
+                roi = img_to_array(roi)
+                roi = np.expand_dims(roi, axis=0)
 
-# Função para analisar os frames
-def analyze_frames(video_path, output_path, fps, progress_bar_extraction, progress_bar_analysis, result_label):
-    frame_count = extract_frames(video_path)  # Extrai os quadros do vídeo
+                predictions = model.predict(roi)[0]
+                label = ['Raiva', 'Desgosto', 'Medo', 'Felicidade', 'Tristeza', 'Surpresa', 'Neutralidade']
+                emotion_probability = np.max(predictions)
+                emotion = label[np.argmax(predictions)]
 
-    emotions = []
-    prev_emotion = None
+                total_emotions[emotion] = total_emotions.get(emotion, 0) + 1
+                cv2.rectangle(frame, (x, y - 40), (x + w, y), (0, 0, 255), -1)
+                cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
+            
+            cv2.imwrite(f"frames/frame_{frame_count}.jpg", frame)
 
-    for i in range(frame_count):
-        img_path = f'frames/frame{i}.jpg'
-        img = cv2.imread(img_path)
+        frame_count += 1
 
-        results = DeepFace.analyze(img, actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
+    return total_emotions
 
-        for j, result in enumerate(results):
-            text = f"Face {j + 1}:\nAge: {result['age']}\nGender: {result['gender']}\nRace: {result['dominant_race']}\nEmotion: {result['dominant_emotion']}"
-            emotions.append(result['dominant_emotion'])
-            img = draw_text_with_background_opencv(img, text, j)
+# Função para salvar o vídeo analisado
+def save_analyzed_video(cap):
+    frame_width = int(cap.get(3))
+    frame_height = int(cap.get(4))
+    out = cv2.VideoWriter('final_video.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (frame_width, frame_height))
+    
+    frame_files = [f for f in os.listdir("frames") if f.endswith(".jpg")]
+    frame_files.sort(key=lambda x: int(x.split("_")[1].split(".")[0]))
 
-            if prev_emotion:
-                emotions.extend([prev_emotion] * (30 // fps - j))
-
-        cv2.imwrite(f'analyzed_frames/frame{i}.jpg', img)
-
-        prev_emotion = result['dominant_emotion']
-
-        # Atualize a barra de progresso de análise de frames
-        progress = min(int((i / frame_count) * 100), 100)
-        progress_bar_analysis["value"] = progress
-
-        # Calcule o tempo estimado restante
-        current_time = time.time()
-        elapsed_time = current_time - start_time
-        estimated_time_remaining = elapsed_time / (i + 1) * (frame_count - i - 1)
-        hours, remainder = divmod(estimated_time_remaining, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        time_remaining_str = f"Tempo estimado restante: {int(hours)}h {int(minutes)}m {int(seconds)}s"
-        result_label.config(text=f"Análise em andamento... Progresso: {progress}%\n{time_remaining_str}")
-        root.update()
-
-    img_array = []
-    for i in range(frame_count):
-        img_path = f'analyzed_frames/frame{i}.jpg'
-        img = cv2.imread(img_path)
-        height, width, layers = img.shape
-        size = (width, height)
-        img_array.append(img)
-
-    out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
-
-    for i in range(len(img_array)):
-        out.write(img_array[i])
-
+    for frame_file in frame_files:
+        frame = cv2.imread(f"frames/{frame_file}")
+        out.write(frame)
+    
     out.release()
+    print("Vídeo analisado salvo.")
 
-    shutil.rmtree('frames')
-    shutil.rmtree('analyzed_frames')
+# Função para mostrar estatísticas
+def show_statistics(total_emotions):
+    if total_emotions:
+        print("Estatísticas das análises faciais:")
+        for emotion, count in total_emotions.items():
+            print(f"{emotion}: {count}")
+    else:
+        print("Nenhuma estatística de análise disponível. Verifique se a análise facial foi bem-sucedida.")
 
-    emotion_counter = Counter(emotions)
-    total_emotions = sum(emotion_counter.values())
-    emotion_percentages = {emotion: count / total_emotions * 100 for emotion, count in emotion_counter.items()}
+# Função principal para executar todas as tarefas
+def main():
+    global cap, video_fps
+    open_video()
+    get_video_fps()
+    
+def start_analysis():
+    download_model()
+    model = load_pretrained_model()
+    check_gpu()
+    analyze_fps = get_user_fps()
+    total_emotions = analyze_frame(cap, model, analyze_fps, video_fps)
+    save_analyzed_video(cap)
+    show_statistics(total_emotions)
+    shutil.rmtree("frames")  # Remove o diretório com os quadros extraídos
+    print("Processo concluído.")
 
-    return emotion_percentages
-
-# Função para selecionar o vídeo e iniciar a análise
-def select_and_analyze_video():
-    global start_time  # Declare a variável global para rastrear o tempo de início
-    start_time = time.time()  # Registre o tempo de início da análise
-
-    # Abra a caixa de diálogo para selecionar o vídeo
-    filepath = filedialog.askopenfilename()
-
-    # Solicite ao usuário a taxa de quadros por segundo (FPS) para análise
-    fps = int(input("Digite a taxa de quadros por segundo para análise: "))
-
-    # Configure a barra de progresso para extração de frames
-    progress_frame_extraction["maximum"] = 100
-    progress_frame_extraction["value"] = 0
-
-    # Configure a barra de progresso para análise de frames
-    progress_frame_analysis["maximum"] = 100
-    progress_frame_analysis["value"] = 0
-
-    # Extraia e analise os frames em segundo plano
-    def analyze_in_background():
-        result_label.config(text="Análise em andamento...")
-        root.update()
-
-        emotion_percentages = analyze_frames(filepath, 'project.avi', fps, progress_frame_extraction, progress_frame_analysis, result_label)
-
-        result = "Análise concluída. Resultados salvos em 'project.avi'.\n\nEmoções detectadas:\n"
-        for emotion, percentage in emotion_percentages.items():
-            result += f"{emotion}: {percentage:.2f}%\n"
-
-        result_label.config(text=result)
-
-    thread = threading.Thread(target=analyze_in_background)
-    thread.start()
-
-# Crie a janela principal
+# Interface Tkinter
 root = tk.Tk()
-root.title("Análise de Vídeo")
+root.title("Análise de Emoção em Vídeo")
 
-# Crie um botão para selecionar o vídeo e iniciar a análise
-analyze_button = tk.Button(root, text="Selecionar Vídeo e Iniciar Análise", command=select_and_analyze_video)
+open_button = tk.Button(root, text="Abrir Vídeo", command=main)
+open_button.pack()
+
+fps_label = tk.Label(root, text="Taxa de quadros do vídeo: ")
+fps_label.pack()
+fps_entry = tk.Entry(root)
+fps_entry.pack()
+
+analyze_button = tk.Button(root, text="Iniciar Análise", command=start_analysis)
 analyze_button.pack()
 
-# Crie uma barra de progresso para extração de frames
-progress_frame_extraction = ttk.Progressbar(root, orient="horizontal", length=200, mode="determinate")
-progress_frame_extraction.pack()
-
-# Crie uma barra de progresso para análise de frames
-progress_frame_analysis = ttk.Progressbar(root, orient="horizontal", length=200, mode="determinate")
-progress_frame_analysis.pack()
-
-# Rótulo para exibir o resultado
-result_label = tk.Label(root, text="")
-result_label.pack()
-
-# Inicie o loop principal
 root.mainloop()

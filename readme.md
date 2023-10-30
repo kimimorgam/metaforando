@@ -47,6 +47,7 @@ Este aplicativo Python utiliza Tkinter para a interface gráfica e OpenCV, Tenso
 - Requests
 
 Versão local, rodando, explicando:
+
 https://github.com/kimimorgam/metaforando/assets/140536250/40f859d1-c2cb-4507-a741-2365d236f8fe
 
 Versão local by Kimi Morgam

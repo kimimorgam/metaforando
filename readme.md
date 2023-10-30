@@ -16,6 +16,8 @@ Mostra as porcentagens das emoções mais sentidas pela pessoa após a análise 
 Como usar:
 
 No colab, basta seguir os passo ;)
+
+
 ( obs, a versão do colab, possui aceleração por GPU então o processo é MUITO rápido )
 
 Inicie o programa. A janela principal será aberta.
@@ -26,8 +28,11 @@ Após a análise, uma nova janela será aberta mostrando as porcentagens das emo
 Dependências:
 
 OpenCV ( pip install opencv-python )
+
 tkinter
+
 DeepFace ( pip install deepface )
+
 os
 shutil
 collections

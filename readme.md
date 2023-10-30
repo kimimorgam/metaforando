@@ -2,7 +2,7 @@
 
 | Colab | Info
 | --- | --- |
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1OdOov32V8MC-Nv21Q9YapQo_1UXCmSDr#scrollTo=938a8529](https://colab.research.google.com/drive/1OdOov32V8MC-Nv21Q9YapQo_1UXCmSDr#scrollTo=938a8529)) | Use via colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Ri0fMplq_HJp9wiu7Hl6qpXXA34Ea3dG](https://colab.research.google.com/drive/1Ri0fMplq_HJp9wiu7Hl6qpXXA34Ea3dG)) | Use via colab
 
 Ferramenta de analise de emoções faciais ( similar ao canal metaforando )
 Este projeto usa a biblioteca DeepFace para analisar as emoções de uma pessoa em um vídeo.
@@ -16,6 +16,7 @@ Mostra as porcentagens das emoções mais sentidas pela pessoa após a análise 
 Como usar:
 
 No colab, basta seguir os passo ;)
+( obs, a versão do colab, possui aceleração por GPU então o processo é MUITO rápido )
 
 Inicie o programa. A janela principal será aberta.
 Clique no botão "Select Video" para selecionar o vídeo que você deseja analisar.

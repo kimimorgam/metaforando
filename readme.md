@@ -46,3 +46,5 @@ Este aplicativo Python utiliza Tkinter para a interface gráfica e OpenCV, Tenso
 - NumPy
 - Requests
 
+Versão local by Kimi Morgam
+Versão colab by Kimi Morgam & Rafa Godoy

@@ -29,12 +29,10 @@ Dependências:
 
 OpenCV ( pip install opencv-python )
 
+pytube
+
+ipywidgets
+
 tkinter
-
-DeepFace ( pip install deepface )
-
-os
-shutil
-collections
 
 Este projeto foi desenvolvido em Python.

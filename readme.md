@@ -4,7 +4,7 @@
 | --- | --- |
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1OdOov32V8MC-Nv21Q9YapQo_1UXCmSDr#scrollTo=938a8529](https://colab.research.google.com/drive/1OdOov32V8MC-Nv21Q9YapQo_1UXCmSDr#scrollTo=938a8529)) | Use via colab
 
-Face Emotion Analyzer
+Ferramenta de analise de emoções faciais ( similar ao canal metaforando )
 Este projeto usa a biblioteca DeepFace para analisar as emoções de uma pessoa em um vídeo.
 
 Funcionalidades?
@@ -14,6 +14,8 @@ Exibe as informações da análise (idade, gênero, raça e emoção predominant
 Mostra as porcentagens das emoções mais sentidas pela pessoa após a análise do vídeo.
 
 Como usar:
+
+No colab, basta seguir os passo ;)
 
 Inicie o programa. A janela principal será aberta.
 Clique no botão "Select Video" para selecionar o vídeo que você deseja analisar.
@@ -31,29 +33,6 @@ collections
 
 Este projeto foi desenvolvido em Python.
 
-----------------------------------------
-
-Face Emotion Analyzer
-This project uses the DeepFace library to analyze a person's emotions in a video.
-
-Features:
-
-Analyzes a person's facial emotions in a video.
-Displays the analysis information (age, gender, race, and dominant emotion) on the video itself.
-Displays the percentages of the most felt emotions by the person after the video analysis.
-
-How to Use:
-
-Start the program. The main window will open.
-Click the "Select Video" button to select the video you want to analyze.
-The program will analyze the video and display the analysis information on the video itself.
-After the analysis, a new window will open showing the percentages of the most felt emotions by the person in the video.
-
-Dependencies:
-OpenCV ( pip install opencv-python )
-tkinter
-DeepFace ( pip install deepface )
-os
 shutil
 collections
 

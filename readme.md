@@ -5,7 +5,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Ri0fMplq_HJp9wiu7Hl6qpXXA34Ea3dG](https://colab.research.google.com/drive/1Ri0fMplq_HJp9wiu7Hl6qpXXA34Ea3dG)) | Use via colab
 
 Ferramenta de analise de emoções faciais ( similar ao canal metaforando )
-Este projeto usa a biblioteca DeepFace para analisar as emoções de uma pessoa em um vídeo.
+Este projeto analisa as emoções de uma pessoa em um vídeo.
 
 Funcionalidades?
 
